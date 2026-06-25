@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Skill Demo video page">
+    <title>Skill Demo</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        background: #050608;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+      }
+
+      body {
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at center, rgba(255, 255, 255, 0.08), transparent 32rem),
+          #050608;
+      }
+
+      video {
+        width: 100vw;
+        height: 100vh;
+        display: block;
+        background: #000;
+        object-fit: contain;
+      }
+
+      .play-fallback {
+        position: fixed;
+        inset: 0;
+        display: none;
+        place-items: center;
+        border: 0;
+        background: rgba(0, 0, 0, 0.36);
+        cursor: pointer;
+      }
+
+      .play-fallback.is-visible {
+        display: grid;
+      }
+
+      .play-fallback::before {
+        width: 5rem;
+        height: 5rem;
+        content: "";
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.34);
+      }
+
+      .play-fallback::after {
+        position: absolute;
+        width: 0;
+        height: 0;
+        margin-left: 0.4rem;
+        content: "";
+        border-top: 1.1rem solid transparent;
+        border-bottom: 1.1rem solid transparent;
+        border-left: 1.7rem solid #050608;
+      }
+
+      .unsupported {
+        position: fixed;
+        inset-inline: 1rem;
+        bottom: 1rem;
+        display: none;
+        margin: 0;
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 0.95rem;
+        text-align: center;
+      }
+
+      .unsupported.is-visible {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <video id="demoVideo" src="skilldemo.mov" autoplay muted playsinline controls preload="auto"></video>
+    <button class="play-fallback" id="playFallback" type="button" aria-label="Play video"></button>
+    <p class="unsupported" id="unsupported">This browser could not play the demo video.</p>
+
+    <script>
+      const video = document.getElementById("demoVideo");
+      const fallback = document.getElementById("playFallback");
+      const unsupported = document.getElementById("unsupported");
+
+      async function startVideo() {
+        if (video.error) {
+          unsupported.classList.add("is-visible");
+          return;
+        }
+
+        try {
+          await video.play();
+          fallback.classList.remove("is-visible");
+        } catch (error) {
+          fallback.classList.add("is-visible");
+        }
+      }
+
+      fallback.addEventListener("click", async () => {
+        video.muted = false;
+        await startVideo();
+      });
+
+      video.addEventListener("error", () => {
+        fallback.classList.remove("is-visible");
+        unsupported.classList.add("is-visible");
+      });
+
+      window.addEventListener("load", startVideo);
+    </script>
+  </body>
+</html>
